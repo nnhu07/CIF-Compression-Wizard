@@ -1,11 +1,14 @@
 import java.awt.*;
 import java.io.File;
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+
 
 public class Controller
 {
 	private Image baseImage;
 	private ImageRegions compressedImage;
-
+ 	private Compressor m_compressor;
 	public Controller()
 	{
 	}
@@ -24,16 +27,45 @@ public class Controller
 	 */
 	public Image getBaseImage()
 	{
-		return null;
+		BufferedImage reading_Img;
+            try{
+                reading_Img = ImageIO.read(f);
+                baseImage = reading_Img;
+                return true;
+            }catch(Exception e){
+                baseImage = null;
+                return false;
+            }	  
+	}
+	public Image getBaseImage()
+	{
+            if (baseImage!= null)
+            {
+                return baseImage;
+            }else
+            {
+                return null;
+            }
 	}
 
+        public void getCompressImage()
+        {
+            compressedImage = m_compressor.ir;
+        }
 	/**
 	 * Calls the Compressor on the base image, given the options from the Menu.
 	 * Need to think about what failure conditions might be.
 	 */
 	public boolean compressImage(int percent, boolean animate)
 	{
+	 try{
+                compressedImage = new ImageRegions((BufferedImage)baseImage);
+                m_compressor = new Compressor(compressedImage);
+                m_compressor.segment(percent);
+                return true;
+            }catch(Exception e){}
 		return false;
+
 	}
 
 	/**
@@ -41,7 +73,12 @@ public class Controller
 	 */
 	public boolean saveImageAsPNG(File f)
 	{
-		return false;
+	 try{
+                ImageIO.write(compressedImage.image, "png", f);
+                return true;
+            }catch(Exception e)
+            {  }
+            return false;
 	}
 
 	/**
@@ -49,6 +86,11 @@ public class Controller
 	 */
 	public boolean saveImageAsCIF(File f)
 	{
-		return false;
+	 try{
+                ImageIO.write(compressedImage.image, "cif", f);
+                return true;
+            }catch(Exception e)
+            {  }
+            return false;
 	}
 }
